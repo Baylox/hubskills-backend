@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "HubskillsBackendApplication",
+            "request": "launch",
+            "mainClass": "com.hubskills.HubskillsBackendApplication",
+            "projectName": "hubskills-backend"
+        },
+        {
+            "type": "java",
+            "name": "Run Hubskills Backend",
+            "request": "launch",
+            "mainClass": "com.hubskills.HubskillsBackendApplication",
+            "projectName": "Hubskills-backend",
+            "env": {
+                "DB_USERNAME": "hubskills",
+                "DB_PASSWORD": "hubskills"
+            }
+        }
+    ]
+}
