@@ -1,28 +1,28 @@
 # Maven
-/target
-/target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/resources/*.properties
-!**/src/test/resources/*.properties
-
-# IDEs
-.idea/
-.vscode/
-*.iml
-*.ipr
-*.iws
+target/
+*.jar
+*.war
+*.rar
 .classpath
 .project
 .settings/
-.springBeans
 
-# Local Config
-.env
-*.local.properties
-# Ignore all properties files in resources? No, usually we want application.properties, but not secrets.
-# We already cleaned application.properties so it is safe to commit.
+# IDE
+.idea/
+*.iml
+*.iws
+.vscode/
 
-# OS Generated
+# OS
 .DS_Store
 Thumbs.db
 
+# Environment
+.env
+application-local.properties
+
+# Logs
+*.log
+
+# Dependencies
+node_modules/
