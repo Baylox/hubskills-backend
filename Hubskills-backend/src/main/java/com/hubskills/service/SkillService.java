@@ -2,15 +2,18 @@ package com.hubskills.service;
 
 import com.hubskills.model.Skill;
 import com.hubskills.repository.SkillRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class SkillService {
 
-    @Autowired
-    private SkillRepository skillRepository;
+    private final SkillRepository skillRepository;
+
+    public SkillService(SkillRepository skillRepository) {
+        this.skillRepository = skillRepository;
+    }
 
     public List<Skill> getAllSkills() {
         return skillRepository.findAll();
