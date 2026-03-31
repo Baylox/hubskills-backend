@@ -1,6 +1,9 @@
 package com.hubskills.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,20 +22,24 @@ public class UserSkill {
     @JoinColumn(name = "skill_id", nullable = false)
     private Skill skill;
 
+    @NotNull
+    @Min(1)
+    @Max(4)
     @Column(nullable = false)
-    private Integer currentLevel; // 1=Débutant, 2=Intermédiaire, 3=Avancé, 4=Expert
+    private Integer currentLevel;
 
+    @NotNull
+    @Min(1)
+    @Max(4)
     @Column(nullable = false)
-    private Integer targetLevel; // Niveau visé
+    private Integer targetLevel;
 
     @Column(name = "last_updated")
     private LocalDateTime lastUpdated;
 
-    // Constructeur vide
     public UserSkill() {
     }
 
-    // Constructeur avec paramètres
     public UserSkill(User user, Skill skill, Integer currentLevel, Integer targetLevel) {
         this.user = user;
         this.skill = skill;
@@ -41,7 +48,6 @@ public class UserSkill {
         this.lastUpdated = LocalDateTime.now();
     }
 
-    // Getters
     public Long getId() {
         return id;
     }
@@ -66,7 +72,6 @@ public class UserSkill {
         return lastUpdated;
     }
 
-    // Setters
     public void setCurrentLevel(Integer currentLevel) {
         this.currentLevel = currentLevel;
         this.lastUpdated = LocalDateTime.now();
