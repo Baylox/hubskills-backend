@@ -6,7 +6,7 @@ import com.hubskills.service.SkillService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.bean.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import com.hubskills.exception.ResourceNotFoundException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -23,7 +24,7 @@ class SkillControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private SkillService skillService;
 
     @Autowired
@@ -51,7 +52,7 @@ class SkillControllerTest {
 
     @Test
     void getSkillById_nonExistingId_returnsNotFound() throws Exception {
-        when(skillService.getSkillById(99L)).thenReturn(null);
+        when(skillService.getSkillById(99L)).thenThrow(new ResourceNotFoundException("Skill not found: 99"));
 
         mockMvc.perform(get("/api/skills/99"))
                 .andExpect(status().isNotFound());
@@ -90,7 +91,7 @@ class SkillControllerTest {
 
     @Test
     void deleteSkill_nonExistingId_returnsNotFound() throws Exception {
-        when(skillService.getSkillById(99L)).thenReturn(null);
+        when(skillService.getSkillById(99L)).thenThrow(new ResourceNotFoundException("Skill not found: 99"));
 
         mockMvc.perform(delete("/api/skills/99"))
                 .andExpect(status().isNotFound());

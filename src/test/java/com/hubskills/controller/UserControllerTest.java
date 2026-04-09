@@ -6,15 +6,16 @@ import com.hubskills.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.bean.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
+import com.hubskills.exception.ResourceNotFoundException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -24,7 +25,7 @@ class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     @Autowired
@@ -52,7 +53,7 @@ class UserControllerTest {
 
     @Test
     void getUserById_nonExistingId_returnsNotFound() throws Exception {
-        when(userService.getUserById(99L)).thenReturn(null);
+        when(userService.getUserById(99L)).thenThrow(new ResourceNotFoundException("User not found: 99"));
 
         mockMvc.perform(get("/api/users/99"))
                 .andExpect(status().isNotFound());
@@ -61,7 +62,7 @@ class UserControllerTest {
     @Test
     void getUserByEmail_existingEmail_returnsOk() throws Exception {
         User user = new User(1L, "john@example.com", "password", "John", "Doe", "EMPLOYEE");
-        when(userService.getUserByEmail("john@example.com")).thenReturn(Optional.of(user));
+        when(userService.getUserByEmail("john@example.com")).thenReturn(user);
 
         mockMvc.perform(get("/api/users/email/john@example.com"))
                 .andExpect(status().isOk())
@@ -121,7 +122,7 @@ class UserControllerTest {
 
     @Test
     void deleteUser_nonExistingId_returnsNotFound() throws Exception {
-        when(userService.getUserById(99L)).thenReturn(null);
+        when(userService.getUserById(99L)).thenThrow(new ResourceNotFoundException("User not found: 99"));
 
         mockMvc.perform(delete("/api/users/99"))
                 .andExpect(status().isNotFound());
