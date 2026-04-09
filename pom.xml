@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.4</version>
+        <version>3.2.0</version>
         <relativePath/>
     </parent>
 
@@ -19,7 +19,7 @@
     <description>HubSkills backend</description>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>17</java.version>
     </properties>
 
     <dependencies>
@@ -66,8 +66,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
-            <optional>true</optional>
+<optional>true</optional>
         </dependency>
     </dependencies>
 
