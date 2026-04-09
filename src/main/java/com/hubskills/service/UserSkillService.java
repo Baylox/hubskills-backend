@@ -1,5 +1,6 @@
 package com.hubskills.service;
 
+import com.hubskills.exception.ResourceNotFoundException;
 import com.hubskills.model.UserSkill;
 import com.hubskills.model.User;
 import com.hubskills.model.Skill;
@@ -9,7 +10,6 @@ import com.hubskills.repository.SkillRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserSkillService {
@@ -34,51 +34,34 @@ public class UserSkillService {
         return userSkillRepository.findBySkillId(skillId);
     }
 
-    public Optional<UserSkill> getUserSkill(Long userId, Long skillId) {
-        return userSkillRepository.findByUserIdAndSkillId(userId, skillId);
+    public UserSkill getUserSkill(Long userId, Long skillId) {
+        return userSkillRepository.findByUserIdAndSkillId(userId, skillId)
+                .orElseThrow(() -> new ResourceNotFoundException("UserSkill not found for user " + userId + " and skill " + skillId));
     }
 
     public UserSkill addSkillToUser(Long userId, Long skillId, Integer currentLevel, Integer targetLevel) {
-        User user = userRepository.findById(userId).orElse(null);
-        Skill skill = skillRepository.findById(skillId).orElse(null);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
+        Skill skill = skillRepository.findById(skillId)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found: " + skillId));
 
-        if (user == null || skill == null) {
-            return null;
+        if (userSkillRepository.findByUserIdAndSkillId(userId, skillId).isPresent()) {
+            throw new IllegalStateException("User " + userId + " already has skill " + skillId);
         }
 
-        Optional<UserSkill> existing = userSkillRepository.findByUserIdAndSkillId(userId, skillId);
-        if (existing.isPresent()) {
-            return null;
-        }
-
-        UserSkill userSkill = new UserSkill(user, skill, currentLevel, targetLevel);
-        return userSkillRepository.save(userSkill);
+        return userSkillRepository.save(new UserSkill(user, skill, currentLevel, targetLevel));
     }
 
     public UserSkill updateUserSkillLevel(Long userId, Long skillId, Integer newLevel) {
-        Optional<UserSkill> userSkill = userSkillRepository.findByUserIdAndSkillId(userId, skillId);
-
-        if (userSkill.isEmpty()) {
-            return null;
-        }
-
-        UserSkill updated = userSkill.get();
-        updated.setCurrentLevel(newLevel);
-        return userSkillRepository.save(updated);
+        UserSkill userSkill = userSkillRepository.findByUserIdAndSkillId(userId, skillId)
+                .orElseThrow(() -> new ResourceNotFoundException("UserSkill not found for user " + userId + " and skill " + skillId));
+        userSkill.setCurrentLevel(newLevel);
+        return userSkillRepository.save(userSkill);
     }
 
-    public boolean removeSkillFromUser(Long userId, Long skillId) {
-        Optional<UserSkill> userSkill = userSkillRepository.findByUserIdAndSkillId(userId, skillId);
-
-        if (userSkill.isEmpty()) {
-            return false;
-        }
-
-        userSkillRepository.delete(userSkill.get());
-        return true;
-    }
-
-    public UserSkill getUserSkillById(Long userSkillId) {
-        return userSkillRepository.findById(userSkillId).orElse(null);
+    public void removeSkillFromUser(Long userId, Long skillId) {
+        UserSkill userSkill = userSkillRepository.findByUserIdAndSkillId(userId, skillId)
+                .orElseThrow(() -> new ResourceNotFoundException("UserSkill not found for user " + userId + " and skill " + skillId));
+        userSkillRepository.delete(userSkill);
     }
 }

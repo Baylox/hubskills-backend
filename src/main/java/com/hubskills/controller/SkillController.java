@@ -26,25 +26,17 @@ public class SkillController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Skill> getSkillById(@PathVariable Long id) {
-        Skill skill = skillService.getSkillById(id);
-        if (skill == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(skill);
+        return ResponseEntity.ok(skillService.getSkillById(id));
     }
 
     @PostMapping
     public ResponseEntity<Skill> createSkill(@Valid @RequestBody Skill skill) {
-        Skill created = skillService.createSkill(skill);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(skillService.createSkill(skill));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Skill> updateSkill(@PathVariable Long id, @Valid @RequestBody Skill skillDetails) {
         Skill skill = skillService.getSkillById(id);
-        if (skill == null) {
-            return ResponseEntity.notFound().build();
-        }
         skill.setName(skillDetails.getName());
         skill.setCategory(skillDetails.getCategory());
         skill.setDescription(skillDetails.getDescription());
@@ -53,10 +45,7 @@ public class SkillController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSkill(@PathVariable Long id) {
-        Skill skill = skillService.getSkillById(id);
-        if (skill == null) {
-            return ResponseEntity.notFound().build();
-        }
+        skillService.getSkillById(id);
         skillService.deleteSkill(id);
         return ResponseEntity.noContent().build();
     }

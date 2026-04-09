@@ -1,5 +1,6 @@
 package com.hubskills.service;
 
+import com.hubskills.exception.ResourceNotFoundException;
 import com.hubskills.model.Skill;
 import com.hubskills.repository.SkillRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,8 @@ public class SkillService {
     }
 
     public Skill getSkillById(Long id) {
-        return skillRepository.findById(id).orElse(null);
+        return skillRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill not found: " + id));
     }
 
     public Skill createSkill(Skill skill) {

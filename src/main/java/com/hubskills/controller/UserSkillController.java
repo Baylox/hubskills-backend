@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user-skills")
@@ -31,9 +30,7 @@ public class UserSkillController {
 
     @GetMapping("/user/{userId}/skill/{skillId}")
     public ResponseEntity<UserSkill> getUserSkill(@PathVariable Long userId, @PathVariable Long skillId) {
-        Optional<UserSkill> userSkill = userSkillService.getUserSkill(userId, skillId);
-        return userSkill.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(userSkillService.getUserSkill(userId, skillId));
     }
 
     @PostMapping
@@ -42,11 +39,8 @@ public class UserSkillController {
             @RequestParam Long skillId,
             @RequestParam Integer currentLevel,
             @RequestParam Integer targetLevel) {
-        UserSkill created = userSkillService.addSkillToUser(userId, skillId, currentLevel, targetLevel);
-        if (created == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userSkillService.addSkillToUser(userId, skillId, currentLevel, targetLevel));
     }
 
     @PatchMapping("/user/{userId}/skill/{skillId}")
@@ -54,19 +48,12 @@ public class UserSkillController {
             @PathVariable Long userId,
             @PathVariable Long skillId,
             @RequestParam Integer level) {
-        UserSkill updated = userSkillService.updateUserSkillLevel(userId, skillId, level);
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(userSkillService.updateUserSkillLevel(userId, skillId, level));
     }
 
     @DeleteMapping("/user/{userId}/skill/{skillId}")
     public ResponseEntity<Void> removeSkillFromUser(@PathVariable Long userId, @PathVariable Long skillId) {
-        boolean removed = userSkillService.removeSkillFromUser(userId, skillId);
-        if (!removed) {
-            return ResponseEntity.notFound().build();
-        }
+        userSkillService.removeSkillFromUser(userId, skillId);
         return ResponseEntity.noContent().build();
     }
 }
