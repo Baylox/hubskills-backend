@@ -1,5 +1,6 @@
 package com.hubskills.service;
 
+import com.hubskills.exception.ResourceNotFoundException;
 import com.hubskills.model.Skill;
 import com.hubskills.model.User;
 import com.hubskills.model.UserSkill;
@@ -70,10 +71,17 @@ class UserSkillServiceTest {
     void getUserSkill_existing_returnsUserSkill() {
         when(userSkillRepository.findByUserIdAndSkillId(1L, 1L)).thenReturn(Optional.of(userSkill));
 
-        Optional<UserSkill> result = userSkillService.getUserSkill(1L, 1L);
+        UserSkill result = userSkillService.getUserSkill(1L, 1L);
 
-        assertTrue(result.isPresent());
-        assertEquals(2, result.get().getCurrentLevel());
+        assertNotNull(result);
+        assertEquals(2, result.getCurrentLevel());
+    }
+
+    @Test
+    void getUserSkill_nonExisting_throwsException() {
+        when(userSkillRepository.findByUserIdAndSkillId(1L, 99L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userSkillService.getUserSkill(1L, 99L));
     }
 
     @Test
@@ -90,23 +98,19 @@ class UserSkillServiceTest {
     }
 
     @Test
-    void addSkillToUser_userNotFound_returnsNull() {
+    void addSkillToUser_userNotFound_throwsException() {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
-        UserSkill result = userSkillService.addSkillToUser(99L, 1L, 2, 4);
-
-        assertNull(result);
+        assertThrows(ResourceNotFoundException.class, () -> userSkillService.addSkillToUser(99L, 1L, 2, 4));
     }
 
     @Test
-    void addSkillToUser_alreadyExists_returnsNull() {
+    void addSkillToUser_alreadyExists_throwsException() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(skillRepository.findById(1L)).thenReturn(Optional.of(skill));
         when(userSkillRepository.findByUserIdAndSkillId(1L, 1L)).thenReturn(Optional.of(userSkill));
 
-        UserSkill result = userSkillService.addSkillToUser(1L, 1L, 2, 4);
-
-        assertNull(result);
+        assertThrows(IllegalStateException.class, () -> userSkillService.addSkillToUser(1L, 1L, 2, 4));
     }
 
     @Test
@@ -121,30 +125,25 @@ class UserSkillServiceTest {
     }
 
     @Test
-    void updateUserSkillLevel_nonExisting_returnsNull() {
+    void updateUserSkillLevel_nonExisting_throwsException() {
         when(userSkillRepository.findByUserIdAndSkillId(1L, 99L)).thenReturn(Optional.empty());
 
-        UserSkill result = userSkillService.updateUserSkillLevel(1L, 99L, 3);
-
-        assertNull(result);
+        assertThrows(ResourceNotFoundException.class, () -> userSkillService.updateUserSkillLevel(1L, 99L, 3));
     }
 
     @Test
-    void removeSkillFromUser_existing_returnsTrue() {
+    void removeSkillFromUser_existing_deletesUserSkill() {
         when(userSkillRepository.findByUserIdAndSkillId(1L, 1L)).thenReturn(Optional.of(userSkill));
 
-        boolean result = userSkillService.removeSkillFromUser(1L, 1L);
+        userSkillService.removeSkillFromUser(1L, 1L);
 
-        assertTrue(result);
         verify(userSkillRepository).delete(userSkill);
     }
 
     @Test
-    void removeSkillFromUser_nonExisting_returnsFalse() {
+    void removeSkillFromUser_nonExisting_throwsException() {
         when(userSkillRepository.findByUserIdAndSkillId(1L, 99L)).thenReturn(Optional.empty());
 
-        boolean result = userSkillService.removeSkillFromUser(1L, 99L);
-
-        assertFalse(result);
+        assertThrows(ResourceNotFoundException.class, () -> userSkillService.removeSkillFromUser(1L, 99L));
     }
 }

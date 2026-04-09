@@ -1,5 +1,6 @@
 package com.hubskills.service;
 
+import com.hubskills.exception.ResourceNotFoundException;
 import com.hubskills.model.User;
 import com.hubskills.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,31 +55,27 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserById_nonExistingId_returnsNull() {
+    void getUserById_nonExistingId_throwsException() {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
-        User result = userService.getUserById(99L);
-
-        assertNull(result);
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(99L));
     }
 
     @Test
     void getUserByEmail_existingEmail_returnsUser() {
         when(userRepository.findByEmail("john@example.com")).thenReturn(Optional.of(user));
 
-        Optional<User> result = userService.getUserByEmail("john@example.com");
+        User result = userService.getUserByEmail("john@example.com");
 
-        assertTrue(result.isPresent());
-        assertEquals("John", result.get().getFirstName());
+        assertNotNull(result);
+        assertEquals("John", result.getFirstName());
     }
 
     @Test
-    void getUserByEmail_nonExistingEmail_returnsEmpty() {
+    void getUserByEmail_nonExistingEmail_throwsException() {
         when(userRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
 
-        Optional<User> result = userService.getUserByEmail("unknown@example.com");
-
-        assertTrue(result.isEmpty());
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserByEmail("unknown@example.com"));
     }
 
     @Test
