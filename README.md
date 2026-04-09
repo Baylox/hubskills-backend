@@ -11,10 +11,22 @@ API REST de gestion des competences pour une organisation. Permet de gerer les u
 
 ## Prerequis
 
+- Docker + Docker Compose
+
+## Lancement rapide (Docker)
+
+```bash
+docker-compose up --build
+```
+
+L'API demarre sur `http://localhost:8080`. PostgreSQL est inclus, aucune installation manuelle necessaire.
+
+## Lancement sans Docker
+
+### Prerequis
+
 - JDK 17+
 - PostgreSQL
-
-## Installation
 
 ### 1. Base de donnees
 
@@ -28,22 +40,15 @@ GRANT ALL PRIVILEGES ON DATABASE hubskills TO hubskills;
 
 ### 2. Variables d'environnement
 
-L'application **requiert** ces variables (aucun credential n'est en dur) :
-
-| Variable      | Description                        | Exemple                                      |
-|---------------|------------------------------------|----------------------------------------------|
+| Variable      | Description                             | Exemple                                      |
+|---------------|-----------------------------------------|----------------------------------------------|
 | `DB_URL`      | URL JDBC (optionnel, defaut ci-dessous) | `jdbc:postgresql://localhost:5432/hubskills` |
-| `DB_USERNAME` | Utilisateur PostgreSQL             | `hubskills`                                  |
-| `DB_PASSWORD` | Mot de passe PostgreSQL            | `votre_mot_de_passe`                         |
+| `DB_USERNAME` | Utilisateur PostgreSQL                  | `hubskills`                                  |
+| `DB_PASSWORD` | Mot de passe PostgreSQL                 | `votre_mot_de_passe`                         |
 
 ```bash
 export DB_USERNAME=hubskills
 export DB_PASSWORD=votre_mot_de_passe
-```
-
-### 3. Lancement
-
-```bash
 ./mvnw spring-boot:run
 ```
 
